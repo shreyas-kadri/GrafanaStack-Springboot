@@ -12,18 +12,18 @@ receivers:
           static_configs:
             - targets: ["demoapp1:8090"]
           metrics_path: "/actuator/prometheus"
-        - job_name: "DemoApp2" # New job for scleraBff
+        - job_name: "DemoApp2"
           static_configs:
             - targets: ["demoapp2:8092"]
           metrics_path: "/actuator/prometheus"
-          
+
 
 processors:
   batch:
 
 exporters:
-  otlphttp/metrics:
-    endpoint: http://prometheus:9090/api/v1/otlp
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
     tls:
       insecure: true
   otlphttp/traces:
@@ -51,7 +51,7 @@ service:
     metrics:
       receivers: [otlp, prometheus/collector]
       processors: [batch]
-      exporters: [otlphttp/metrics]
+      exporters: [prometheusremotewrite]
       #exporters: [otlphttp/metrics,debug/metrics]
     logs:
       receivers: [otlp]
